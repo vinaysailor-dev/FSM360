@@ -178,6 +178,23 @@
   controls.registerMethod('inElement',    new Marzipano.ElementPressControlMethod(viewInElement,  'zoom', -velocity, friction), true);
   controls.registerMethod('outElement',   new Marzipano.ElementPressControlMethod(viewOutElement, 'zoom',  velocity, friction), true);
 
+  // Track the view of the currently displayed scene, so mouse-wheel
+  // zoom knows which view to adjust.
+  var currentView = null;
+
+  // Enable zooming with the mouse scroll wheel / trackpad.
+  var scrollZoomSpeed = 0.05;
+  panoElement.addEventListener('wheel', function(event) {
+    event.preventDefault();
+    if (!currentView) {
+      return;
+    }
+    var fov = currentView.fov();
+    // Scrolling down/away zooms out (bigger fov), scrolling up/toward zooms in (smaller fov).
+    var delta = event.deltaY > 0 ? scrollZoomSpeed : -scrollZoomSpeed;
+    currentView.setFov(fov + delta);
+  }, { passive: false });
+
   function sanitize(s) {
     return s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;');
   }
@@ -189,6 +206,7 @@
     startAutorotate();
     updateSceneName(scene);
     updateSceneList(scene);
+    currentView = scene.view;
   }
 
   function updateSceneName(scene) {

@@ -186,13 +186,15 @@
   var scrollZoomSpeed = 0.05;
   panoElement.addEventListener('wheel', function(event) {
     event.preventDefault();
+    console.log('wheel event fired, deltaY=', event.deltaY, 'currentView=', currentView);
     if (!currentView) {
       return;
     }
     var fov = currentView.fov();
-    // Scrolling down/away zooms out (bigger fov), scrolling up/toward zooms in (smaller fov).
+    console.log('current fov before=', fov);
     var delta = event.deltaY > 0 ? scrollZoomSpeed : -scrollZoomSpeed;
     currentView.setFov(fov + delta);
+    console.log('fov after=', currentView.fov());
   }, { passive: false });
 
   function sanitize(s) {
